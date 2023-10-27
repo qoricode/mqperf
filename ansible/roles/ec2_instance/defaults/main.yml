@@ -1,6 +1,6 @@
 ---
-aws_ami_id: "ami-0ea3405d2d2522162"
-aws_instance_type: t2.micro
-ec2_groups: [ 'ssh_access' ]
+aws_ami_id: "ami-04fb7beeed4da358b"
+ec2_instance_type: t2.micro
+ec2_groups: [ 'mqperf_ssh_access' ]
 count: 1
 ec2_tag: Demo

@@ -7,6 +7,6 @@
     "max_send_msg_batch_size": 10,
     "receiver_threads": 8,
     "receive_msg_batch_size": 10,
-    "broker_hosts": [ "{{ hostvars[groups['postgres'][0]].ec2_private_ip_address }}" ],
+    "broker_hosts": [ "{{ hostvars[groups['postgres'][0]].private_ip_address }}" ],
     "mq": {}
 }

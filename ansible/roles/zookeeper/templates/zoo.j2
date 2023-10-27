@@ -14,5 +14,5 @@ clientPort=2181
 # the directory where the transaction logs are stored.
 dataLogDir=/var/lib/zookeeper
 {% for host in zookeeper_hosts %}
-server.{{loop.index}}={{hostvars[host]['ec2_private_ip_address']}}:2888:3888
+server.{{loop.index}}={{hostvars[host]['private_ip_address']}}:2888:3888
 {% endfor %}

@@ -23,17 +23,11 @@
       when: vpc_facts.vpcs|length > 0
 
     - name: Terminate mqperf instances
-      ec2:
+      ec2_instance:
         instance_ids: "{{ ec2_facts.instances|map(attribute='instance_id')|list }}"
         state: absent
         wait: true
       when: ec2_facts.instances|length > 0
-
-    - name: Delete NATS ELB
-      ec2_elb_lb:
-        name: nats-elb
-        state: absent
-        region: "{{ aws_region }}"
 
     - name: Delete security groups
       ec2_group: 
@@ -41,15 +35,17 @@
         state: absent
         description:
       with_items: 
-        - grafana_access
-        - prometheus_access
-        - rabbitmq_access
-        - rocketmq_access
-        - activemq_access
-        - activemq_artemis_access
-        - eventstore_access
-        - all_access
-        - ssh_access
+        - mqperf_grafana_access
+        - mqperf_prometheus_access
+        - mqperf_rabbitmq_access
+        - mqperf_redpanda_access
+        - mqperf_redistreams_access
+        - mqperf_rocketmq_access
+        - mqperf_activemq_access
+        - mqperf_activemq_artemis_access
+        - mqperf_eventstore_access
+        - mqperf_all_access
+        - mqperf_ssh_access
         
     - name: Drop keys
       ec2_key:
@@ -64,18 +60,20 @@
     - name: Delete internet gateway
       ec2_vpc_igw:
         vpc_id: "{{ vpc_id }}"
+        tags:
+          Name: "mqperf"
         state: absent
-      when: vpc_id is defined
-
+      when: create_vpc|bool and vpc_id is defined
+      
     - name: Delete subnet
       ec2_vpc_subnet:
         vpc_id: "{{ vpc_id }}"
         cidr: "{{ subnet_cidr }}"
         state: absent
-      when: vpc_id is defined
+      when: create_subnet|bool and vpc_id is defined
 
     - name: Gather routing table facts
-      ec2_vpc_route_table_facts:
+      ec2_vpc_route_table_info:
         filters:
           "tag:Name": "mqperf"
       register: routing_table_facts
@@ -96,3 +94,4 @@
         name: "{{ vpc_name }}"
         cidr_block: "{{ vpc_cidr_block }}"
         state: absent
+      when: create_vpc|bool

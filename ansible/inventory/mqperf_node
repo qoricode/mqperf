@@ -1,5 +1,0 @@
-[receiver:children]
-tag_group_Receiver
-
-[sender:children]
-tag_group_Sender

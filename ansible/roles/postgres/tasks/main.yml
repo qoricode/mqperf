@@ -62,9 +62,9 @@
   blockinfile:
     path: /etc/hosts
     block: |
-      {{ hostvars[postgres_master].ec2_private_ip_address }} postgres_master
-      {{ hostvars[postgres_slave_1].ec2_private_ip_address }} postgres_slave_1
-      {{ hostvars[postgres_slave_2].ec2_private_ip_address }} postgres_slave_2
+      {{ hostvars[postgres_master].private_ip_address }} postgres_master
+      {{ hostvars[postgres_slave_1].private_ip_address }} postgres_slave_1
+      {{ hostvars[postgres_slave_2].private_ip_address }} postgres_slave_2
 
 - name: '[Master] Perform the initdb command'
   run_once: true
@@ -144,7 +144,7 @@
 
 - name: '[Slave1] Backup master to slave'
   run_once: true
-  command: pg_basebackup -h postgres_master -D /var/lib/pgsql/12/data -U postgres -P -v  -R -X stream -C -S {{ hostvars[item].ec2_private_ip_address|replace(".", "_") }}
+  command: pg_basebackup -h postgres_master -D /var/lib/pgsql/12/data -U postgres -P -v  -R -X stream -C -S {{ hostvars[item].private_ip_address|replace(".", "_") }}
   delegate_to: "{{ item }}"
   args:
     creates: /var/lib/pgsql/12/data/PG_VERSION
@@ -155,7 +155,7 @@
 
 - name: '[Slave2] Backup master to slave'
   run_once: true
-  command: pg_basebackup -h postgres_master -D /var/lib/pgsql/12/data -U postgres -P -v  -R -X stream -C -S {{ hostvars[item].ec2_private_ip_address|replace(".", "_") }}
+  command: pg_basebackup -h postgres_master -D /var/lib/pgsql/12/data -U postgres -P -v  -R -X stream -C -S {{ hostvars[item].private_ip_address|replace(".", "_") }}
   delegate_to: "{{ item }}"
   args:
     creates: /var/lib/pgsql/12/data/PG_VERSION

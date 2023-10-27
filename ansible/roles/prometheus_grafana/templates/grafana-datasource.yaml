@@ -5,4 +5,4 @@ datasources:
     type: prometheus
     uid: prometheus
     access: proxy
-    url: "{{ hostvars[prometheus_instance]['ec2_private_ip_address'] }}:9090"
+    url: "http://prometheus:9090"

@@ -26,3 +26,6 @@ ansible/*.retry
 
 .ensime_cache
 impls
+
+ansible/inventory/aws_ec2.yml
+ansible/.bsp

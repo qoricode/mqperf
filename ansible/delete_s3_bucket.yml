@@ -8,7 +8,7 @@
 
   tasks:
   - name: Delete S3 bucket
-    aws_s3:
-      bucket: "{{ s3_bucket }}"
-      mode: delete
-      region: "{{ aws_region }}"
+    amazon.aws.s3_bucket:
+      name: "{{ s3_bucket }}"
+      state: absent
+      force: true

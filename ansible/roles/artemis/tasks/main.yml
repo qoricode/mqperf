@@ -94,7 +94,7 @@
     --password artemis 
     --allow-anonymous 
     --clustered 
-    --host "{{ hostvars[item].ec2_private_ip_address }}"
+    --host "{{ hostvars[item].private_ip_address }}"
     --cluster-user artemis 
     --cluster-password artemis
     --force
@@ -114,7 +114,7 @@
     --password artemis 
     --allow-anonymous 
     --clustered 
-    --host "{{ hostvars[item].ec2_private_ip_address }}"
+    --host "{{ hostvars[item].private_ip_address }}"
     --cluster-user artemis 
     --cluster-password artemis
     --force

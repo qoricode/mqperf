@@ -2,6 +2,6 @@
 
 - name: Install pip
   become: yes
-  yum:
-    name: python2-pip
+  dnf:
+    name: pip
     state: present

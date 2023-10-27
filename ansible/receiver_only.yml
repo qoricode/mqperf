@@ -1,6 +1,6 @@
 ---
 
-- hosts: receiver
+- hosts: Receiver
   vars:
     test_name: "rocket-1thread.json.j2"
   tasks:
@@ -14,12 +14,12 @@
       src: "{{ playbook_dir }}/tests/{{ test_name }}"
       dest: /tmp/test-config.json
 
-- hosts: receiver
+- hosts: Receiver
   environment:
     RUN_ID: "{{ run_id }}"
     AWS_ACCESS_KEY_ID: "{{ aws_access }}"
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret }}"
   tasks:
   - name: Start receiver
-    shell: nohup /tmp/mqperf.sh start
+    shell: nohup /opt/mqperf/mqperf.sh start
 

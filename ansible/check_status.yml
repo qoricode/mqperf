@@ -1,9 +1,9 @@
 ---
-- hosts: receiver:sender
+- hosts: Receiver:Sender
   tasks:
   - name: Check status
-    shell: /tmp/mqperf.sh status
+    shell: /opt/mqperf/mqperf.sh status
     ignore_errors: yes
     register: mqStatus
 
-  - debug: msg="{{mqStatus.stdout}}"
+  - debug: msg="{{ hostvars[inventory_hostname].tags.Name }} {{ hostvars[inventory_hostname].private_ip_address }} {{ inventory_hostname }} {{mqStatus.stdout}}"

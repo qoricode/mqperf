@@ -1,14 +1,43 @@
 ---
+- name: Template the aws_ec2 config
+  ansible.builtin.template:
+    src: templates/inventory/aws_ec2.yml.j2
+    dest: inventory/aws_ec2.yml
 
+- name: Gather VPC facts
+  ec2_vpc_net_info:
+    filters:
+      "tag:Name": "{{ vpc_name }}"
+  register: vpc_net
+  when: create_vpc == False
+
+- set_fact: vpc_net="{{ (vpc_net.vpcs | first).id }}"
+  when: create_vpc == False and vpc_net.vpcs|length > 0
+  
 - name: Network setup - basic config
   ec2_vpc_net:
     name: "{{ vpc_name }}"
     state: present
     cidr_block: "{{ vpc_cidr_block }}"
     region: "{{ aws_region }}"
-  register: vpc_net
+  register: vpc_net_b
+  when: create_vpc|bool
 
-- set_fact: vpc_net="{{ vpc_net.vpc.id }}"
+- set_fact: 
+    vpc_net: "{{ vpc_net_b.vpc.id }}"
+  when: create_vpc|bool
+
+- name: Gather subnet facts
+  ec2_vpc_subnet_info:
+    region: "{{ aws_region }}"
+    filters:
+      vpc-id: "{{ vpc_net }}"
+      cidr: "{{ subnet_cidr }}"
+  register: subnet_external
+  when: create_subnet == False
+
+- set_fact: subnet_external="{{ subnet_external.subnets.0.id }}"
+  when: create_subnet == False
 
 - name: Network setup - public subnet
   ec2_vpc_subnet:
@@ -19,16 +48,26 @@
     region: "{{ aws_region }}"
     tags:
       Name: "Net-facing subnet" #we don't need this tag actually, but a bug prevents us from this section being empty
-  register: subnet_external
+  register: subnet_external_b
+  when: create_subnet|bool
 
-- set_fact: subnet_external="{{ subnet_external.subnet.id }}"
+- set_fact: 
+    subnet_external: "{{ subnet_external_b.subnet.id }}"
+  when: create_subnet|bool
 
+# - name: "Ansible | List all known variables and facts"
+#   debug:
+#     var: hostvars[inventory_hostname]
+  
 - name: Network setup - Internet Gateway
   ec2_vpc_igw:
     vpc_id: "{{ vpc_net }}"
     state: present
     region: "{{ aws_region }}"
+    tags:
+      Name: "mqperf"
   register: igw
+  when: create_subnet|bool
   
 - name: Network setup - routing table
   ec2_vpc_route_table:
@@ -41,11 +80,12 @@
     routes:
       - dest: 0.0.0.0/0
         gateway_id: "{{ igw.gateway_id }}"
+  when: create_subnet|bool
 
 - name: Network setup - SSH Security Group
   ec2_group:
-    name: "ssh_access"
-    description: "ssh_access"
+    name: "mqperf_ssh_access"
+    description: "mqperf_ssh_access"
     vpc_id: "{{ vpc_net }}"
     region: "{{ aws_region }}"
     rules:
@@ -56,8 +96,8 @@
 
 - name: Network setup - Grafana Security Group
   ec2_group:
-    name: "grafana_access"
-    description: "grafana_access"
+    name: "mqperf_grafana_access"
+    description: "mqperf_grafana_access"
     vpc_id: "{{ vpc_net }}"
     region: "{{ aws_region }}"
     rules:
@@ -65,11 +105,12 @@
         from_port: "{{ grafana_port }}"
         to_port: "{{ grafana_port }}"
         cidr_ip: "{{ all_cidr }}"
+  when: grafana_port is defined
 
 - name: Network setup - Prometheus Security Group
   ec2_group:
-    name: "prometheus_access"
-    description: "prometheus_access"
+    name: "mqperf_prometheus_access"
+    description: "mqperf_prometheus_access"
     vpc_id: "{{ vpc_net }}"
     region: "{{ aws_region }}"
     rules:
@@ -77,11 +118,12 @@
         from_port: "{{ prometheus_port }}"
         to_port: "{{ prometheus_port }}"
         cidr_ip: "{{ all_cidr }}"
+  when: prometheus_port is defined
 
 - name: Network setup - RabbitMQ Security Group
   ec2_group:
-    name: "rabbitmq_access"
-    description: "rabbitmq_access"
+    name: "mqperf_rabbitmq_access"
+    description: "mqperf_rabbitmq_access"
     vpc_id: "{{ vpc_net }}"
     region: "{{ aws_region }}"
     rules:
@@ -89,11 +131,12 @@
         from_port: "{{ rabbitmq_port }}"
         to_port: "{{ rabbitmq_port }}"
         cidr_ip: "{{ all_cidr }}"
+  when: rabbitmq_port is defined
 
 - name: Network setup - RocketMQ Security Group
   ec2_group:
-    name: "rocketmq_access"
-    description: "rocketmq_access"
+    name: "mqperf_rocketmq_access"
+    description: "mqperf_rocketmq_access"
     vpc_id: "{{ vpc_net }}"
     region: "{{ aws_region }}"
     rules:
@@ -105,11 +148,12 @@
         from_port: "{{ rocketmq_broker_port_main }}"
         to_port: "{{ rocketmq_broker_port_main }}"
         cidr_ip: "{{ all_cidr }}"
+  when: rocketmq_broker_port_main is defined
 
 - name: Network setup - ActiveMQ Security Group
   ec2_group:
-    name: "activemq_access"
-    description: "activemq_access"
+    name: "mqperf_activemq_access"
+    description: "mqperf_activemq_access"
     vpc_id: "{{ vpc_net }}"
     region: "{{ aws_region }}"
     rules:
@@ -117,11 +161,12 @@
         from_port: "{{ activemq_port }}"
         to_port: "{{ activemq_port }}"
         cidr_ip: "{{ all_cidr }}"
+  when: activemq_port is defined
 
 - name: Network setup - ActiveMQ Artemis Security Group
   ec2_group:
-    name: "activemq_artemis_access"
-    description: "activemq_artemis_access"
+    name: "mqperf_activemq_artemis_access"
+    description: "mqperf_activemq_artemis_access"
     vpc_id: "{{ vpc_net }}"
     region: "{{ aws_region }}"
     rules:
@@ -129,11 +174,12 @@
         from_port: "{{ activemq_artemis_jolokia_port }}"
         to_port: "{{ activemq_artemis_jolokia_port }}"
         cidr_ip: "{{ all_cidr }}"
+  when: activemq_artemis_jolokia_port is defined
 
 - name: Network setup - EventStore Security Group
   ec2_group:
-    name: "eventstore_access"
-    description: "eventstore_access"
+    name: "mqperf_eventstore_access"
+    description: "mqperf_eventstore_access"
     vpc_id: "{{ vpc_net }}"
     region: "{{ aws_region }}"
     rules:
@@ -141,11 +187,12 @@
         from_port: "{{ eventstore_port }}"
         to_port: "{{ eventstore_port }}"
         cidr_ip: "{{ all_cidr }}"
+  when: eventstore_port is defined
 
 - name: Network setup - Redpanda Security Group
   ec2_group:
-    name: "redpanda_access"
-    description: "redpanda_access"
+    name: "mqperf_redpanda_access"
+    description: "mqperf_redpanda_access"
     vpc_id: "{{ vpc_net }}"
     region: "{{ aws_region }}"
     rules:
@@ -153,11 +200,12 @@
         from_port: "{{ redpanda_port }}"
         to_port: "{{ redpanda_port }}"
         cidr_ip: "{{ all_cidr }}"
+  when: redpanda_port is defined
 
 - name: Network setup - Redistreams Security Group
   ec2_group:
-    name: "redistreams_access"
-    description: "redistreams_access"
+    name: "mqperf_redistreams_access"
+    description: "mqperf_redistreams_access"
     vpc_id: "{{ vpc_net }}"
     region: "{{ aws_region }}"
     rules:
@@ -165,6 +213,7 @@
         from_port: "{{ redistreams_master_port }}"
         to_port: "{{ redistreams_slave2_port }}"
         cidr_ip: "{{ all_cidr }}"
+  when: redistreams_master_port is defined
 
 - name: Create an EC2 key
   ec2_key:

@@ -2,15 +2,17 @@
 
 A benchmark of message queues with data replication and at-least-once delivery guarantees.
 
-Source code for the mqperf article at SoftwareMill's blog: [Evaluating persistent, replicated message queues](https://softwaremill.com/mqperf)
+Extends the original source code from the mqperf article at SoftwareMill's blog: [Evaluating persistent, replicated message queues](https://softwaremill.com/mqperf)
 
 # Setting up the environment
 
 ### Tools
 Tests have been run with the following prerequisites:
-- python 3.9.5 (`via pyenv`)
-- ansible 2.9.5 (`pip install 'ansible==2.9.5'`)
-- boto3 1.17.96 (`pip install boto3`)
+- python 3.11.6 via [pyenv](https://github.com/pyenv/pyenv#getting-pyenv) (`pyenv install 3.11.6; pyenv global 3.11.6`)
+  - see [prerequisites](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
+- boto 3 (`pip install boto3 botocore`)
+- ansible 8.5.0 (`pip install 'ansible==8.5.0'`)
+- ansible aws 6.x (`ansible-galaxy collection install amazon.aws:==6.2.0 community.aws:==6.3.0 --force`)
 
 ### AWS Credentials
 Message queues and test servers are automatically provisioned using **Ansible** on **AWS**. You will need to have the

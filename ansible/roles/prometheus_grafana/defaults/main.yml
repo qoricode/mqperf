@@ -1,7 +1,7 @@
 storage_path: /opt/prometheus
-receivers: "{{ groups['receiver'] }}"
-senders: "{{ groups['sender'] }}"
-prometheus_instance: "{{ groups['prometheus'][0] }}"
+receivers: "{{ groups['Receiver'] }}"
+senders: "{{ groups['Sender'] }}"
+prometheus_instance: "{{ groups['Prometheus'][0] }}"
 prometheus_image_tag: v2.28.0
 prometheus_port: 9090
 grafana_image_tag: 7.5.9

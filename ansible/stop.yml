@@ -1,8 +1,8 @@
 ---
-- hosts: receiver:sender
+- hosts: Receiver:Sender
   tasks:
   - name: Stop mqperf
-    shell: /tmp/mqperf.sh stop
+    shell: /opt/mqperf/mqperf.sh stop
     ignore_errors: yes
     register: mqStatus
 

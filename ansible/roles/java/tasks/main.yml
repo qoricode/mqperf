@@ -1,7 +1,7 @@
 ---
 
-- name: Add extras repository
-  shell: "sudo yum-config-manager --enable extras"
-
-- name: Install Java 11 via amazon-linux-extras packages
-  shell: "sudo amazon-linux-extras install java-openjdk11 -y"
+- name: Install Java 11
+  become: yes
+  dnf:
+    name: java-11-amazon-corretto
+    state: present

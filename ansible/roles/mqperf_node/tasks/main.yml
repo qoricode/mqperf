@@ -1,9 +1,10 @@
 ---
 
 - name: Create S3 bucket
-  aws_s3:
-    bucket: "{{ s3_bucket }}"
-    mode: create
+  # Note a forbidden error may be due to name not being unique 
+  amazon.aws.s3_bucket:
+    name: "{{ s3_bucket }}"
+    state: present
     region: "{{ aws_region }}"
   delegate_to: 127.0.0.1
 
@@ -24,24 +25,24 @@
   register: assembly
 
 - name: Upload deps artifact to S3
-  aws_s3:
+  amazon.aws.s3_object:
     bucket: "{{ s3_bucket }}"
     mode: put
-    object: /jars/mqperf-assembly-deps.jar
+    overwrite: different
+    object: jars/mqperf-assembly-deps.jar
     src: "{{ mqperf_deps_artifact_path }}"
     region: "{{ aws_region }}"
   delegate_to: 127.0.0.1
-  when: deps_assembly.changed
-
+  
 - name: Upload artifact to S3
-  aws_s3:
+  amazon.aws.s3_object:
     bucket: "{{ s3_bucket }}"
     mode: put
-    object: /jars/mqperf-assembly.jar
+    object: jars/mqperf-assembly.jar
+    overwrite: different
     src: "{{ mqperf_artifact_path }}"
     region: "{{ aws_region }}"
   delegate_to: 127.0.0.1
-  when: assembly.changed
 
 - name: Install botocore
   become: yes
@@ -55,21 +56,35 @@
     name: boto3
     extra_args: --ignore-installed
 
+- name: Create directory for deployed code
+  file:
+    path: /opt/mqperf
+    state: directory
+    mode: u=,g=rx,o=rwx
+    owner: root
+    group: ec2-user
+  become: true
+  become_user: root
+  
 - name: Copy deps artifact from S3
   aws_s3:
     bucket: "{{ s3_bucket }}"
     mode: get
-    object: "/jars/{{ item }}.jar"
-    dest: "/tmp/{{ item }}.jar"
+    object: "jars/{{ item }}.jar"
+    dest: "/opt/mqperf/{{ item }}.jar"
     region: "{{ aws_region }}"
     aws_access_key: "{{ aws_access }}"
     aws_secret_key: "{{ aws_secret }}"
   with_items:
     - "mqperf-assembly-deps"
     - "mqperf-assembly"
+  become: true
 
 - name: Prepare start/stop/status script
   template:
     src: mqperf.sh.j2
-    dest: /tmp/mqperf.sh
-    mode: 0700
+    dest: /opt/mqperf/mqperf.sh
+    mode: u=,g=rx,o=rwx
+  become: true
+  become_user: root
+  

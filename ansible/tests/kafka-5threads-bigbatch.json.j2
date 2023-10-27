@@ -7,7 +7,7 @@
     "max_send_msg_batch_size": 100,
     "receiver_threads": 5,
     "receive_msg_batch_size": 1,
-    "broker_hosts": {{ groups['kafka']|map('extract', hostvars, 'ec2_private_ip_address')|list|to_json }},
+    "broker_hosts": {{ groups['kafka']|map('extract', hostvars, 'private_ip_address')|list|to_json }},
     "mq": {
         "acks": -1,
         "commitMs": 10000

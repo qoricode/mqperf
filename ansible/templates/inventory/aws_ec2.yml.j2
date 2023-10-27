@@ -1,0 +1,21 @@
+plugin: aws_ec2
+regions: [ {{ aws_region }} ]
+filters:
+  tag:kind:
+    - mqperf-instance
+  instance-state-name: 
+    - pending
+    - running
+    - shutting-down
+    - stopping
+    - stopped
+keyed_groups:
+  - prefix: tag
+    key: tags
+  - key: tags.group
+    separator: ''
+# Ignores 403 errors rather than failing
+strict_permissions: False
+compose:
+  ansible_host: {% if use_private_addresses|bool %} private_ip_address {% else %} public_ip_address {% endif %}
+  

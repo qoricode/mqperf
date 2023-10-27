@@ -7,7 +7,7 @@
 - set_fact: rocketmq_broker_master_3="{{ groups['rocketmq'][5] }}"
 - set_fact: rocketmq_broker_slave_3="{{ groups['rocketmq'][6] }}"
 
-- set_fact: rocketmq_name_server_private_ip="{{ hostvars[rocketmq_name_server].ec2_private_ip_address }}"
+- set_fact: rocketmq_name_server_private_ip="{{ hostvars[rocketmq_name_server].private_ip_address }}"
 
 - name: Remove Java 7
   yum:
