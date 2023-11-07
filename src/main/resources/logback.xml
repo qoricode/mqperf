@@ -10,6 +10,7 @@
     <logger name="com.amazonaws.http" level="WARN"/>
     <logger name="org.apache.http" level="INFO"/>
     <logger name="org.apache.http.wire" level="WARN"/>
+    <!--logger name="com.softwaremill.mqperf.mq" level="DEBUG"/-->
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />
