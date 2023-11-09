@@ -2,6 +2,7 @@
 - hosts: 127.0.0.1
   connection: local
   roles:
+  - role: aws_common
   - { role: ec2_instance, count: 3, ec2_groups: [ 'mqperf_ssh_access', 'default'], aws_instance_type: r5.2xlarge, ec2_tag_group: Nats, volume_size: 100 }
 
 - name: Set up NATS cluster

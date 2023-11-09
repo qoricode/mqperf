@@ -1,0 +1,4 @@
+---
+dependencies:
+- role: vpc_net
+- role: security_groups
