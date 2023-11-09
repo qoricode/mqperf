@@ -1,0 +1,23 @@
+- name: Gather VPC facts
+  ec2_vpc_net_info:
+    filters:
+      "tag:Name": "{{ vpc_name }}"
+  register: vpc_net
+  when: create_vpc == False
+
+- set_fact: vpc_net="{{ (vpc_net.vpcs | first).id }}"
+  when: create_vpc == False and vpc_net.vpcs|length > 0
+  
+- name: Network setup - basic config
+  ec2_vpc_net:
+    name: "{{ vpc_name }}"
+    state: present
+    cidr_block: "{{ vpc_cidr_block }}"
+    region: "{{ aws_region }}"
+  register: vpc_net_b
+  when: create_vpc|bool
+
+- set_fact: 
+    vpc_net: "{{ vpc_net_b.vpc.id }}"
+  when: create_vpc|bool
+

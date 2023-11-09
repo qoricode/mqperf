@@ -18,13 +18,15 @@
     filters:
       tag:group: "{{ ec2_tag_group }}"
       tag:kind: "mqperf-instance"
-      instance-state-name: running
+      instance-state-name: 
+      - running
   register: ec2
 
 - name: Wait for ssh to come up
   wait_for: host="{% if use_private_addresses|bool %}{{ item.private_dns_name }}{% else %}{{ item.public_dns_name }}{% endif %}" port=22 delay=10 timeout=300
   with_items: "{{ ec2.instances }}"
   when: ec2.changed
+  delegate_to: 127.0.0.1
 
 - name: Provision and attach EBS volume
   ec2_vol:

@@ -1,6 +1,6 @@
 ---
-- include: prepare_storage.yml
+- import_tasks: prepare_storage.yml
 
-- include: install_redpanda.yml
+- import_tasks: install_redpanda.yml
 
-- include: start_redpanda.yml
+- import_tasks: start_redpanda.yml

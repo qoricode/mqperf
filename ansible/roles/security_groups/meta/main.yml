@@ -1,0 +1,14 @@
+---
+dependencies:
+- role: access_cidr
+- { role: security_group, sg_name: "mqperf_ssh_access", sg_from_port: "{{ ssh_port }}", sg_to_port: "{{ ssh_port }}"}
+- { role: security_group, sg_name: "mqperf_grafana_access", sg_from_port: "{{ grafana_port }}", sg_to_port: "{{ grafana_port }}"}
+- { role: security_group, sg_name: "mqperf_prometheus_access", sg_from_port: "{{ prometheus_port }}", sg_to_port: "{{ prometheus_port }}"}
+- { role: security_group, sg_name: "mqperf_rabbitmq_access", sg_from_port: "{{ rabbitmq_port }}", sg_to_port: "{{ rabbitmq_port }}"}
+- { role: security_group, sg_name: "mqperf_rocketmq_name_access", sg_from_port: "{{ rocketmq_name_server_port }}", sg_to_port: "{{ rocketmq_name_server_port }}"}
+- { role: security_group, sg_name: "mqperf_rocketmq_broker_access", sg_from_port: "{{ rocketmq_broker_port_main }}", sg_to_port: "{{ rocketmq_broker_port_main }}"}
+- { role: security_group, sg_name: "mqperf_activemq_access", sg_from_port: "{{ activemq_port }}", sg_to_port: "{{ activemq_port }}"}
+- { role: security_group, sg_name: "mqperf_activemq_artemis_access", sg_from_port: "{{ activemq_artemis_jolokia_port }}", sg_to_port: "{{ activemq_artemis_jolokia_port }}"}
+- { role: security_group, sg_name: "mqperf_eventstore_access", sg_from_port: "{{ eventstore_port }}", sg_to_port: "{{ eventstore_port }}"}
+- { role: security_group, sg_name: "mqperf_redpanda_access", sg_from_port: "{{ redpanda_port }}", sg_to_port: "{{ redpanda_port }}"}
+- { role: security_group, sg_name: "mqperf_redistreams_access", sg_from_port: "{{ redistreams_master_port }}", sg_to_port: "{{ redistreams_slave2_port }}"}

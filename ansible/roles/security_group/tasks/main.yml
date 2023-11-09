@@ -1,0 +1,16 @@
+- name: "Network setup - {{ sg_name }}"
+  ec2_group:
+    name: "{{ sg_name }}"
+    description: "{{ sg_name }}"
+    vpc_id: "{{ vpc_net }}"
+    region: "{{ aws_region }}"
+    rules:
+      - proto: tcp
+        from_port: "{{ sg_from_port }}"
+        to_port: "{{ sg_to_port }}"
+        cidr_ip: "{{ public_access_cidr }}"
+      - proto: tcp
+        from_port: "{{ sg_from_port }}"
+        to_port: "{{ sg_to_port }}"
+        cidr_ip: "{{ vpc_cidr_block }}"
+  when: sg_from_port is defined

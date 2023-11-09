@@ -1,0 +1,7 @@
+---
+# This is if your local ip has changed with lockdown_public_access on
+- hosts: 127.0.0.1
+  connection: local
+  roles:
+  - role: vpc_net
+  - role: security_groups
