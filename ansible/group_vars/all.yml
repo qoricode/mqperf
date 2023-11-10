@@ -1,4 +1,7 @@
 ---
+# For all hosts, avoid warning messages about interpolation
+ansible_python_interpreter: /usr/bin/python3
+
 aws_region: eu-west-2
 aws_zone: "{{ aws_region }}a"
 # Control whether to auto provision VPC and/or Subnet (public with IGW)
@@ -12,6 +15,8 @@ subnet_cidr: "172.42.0.0/22"
 # Private addresses require a private subnet with outbound internet via NAT 
 # (see Ansible script to provision a NAT cluster)
 use_private_addresses: False
+# Lock down public access to localhost's public IP address
+lockdown_public_access: True
 # Auto-generated key to use with EC2 instances (.pem)
 key_name: "mqperf-key"
 # This overrides the default in roles/ec2_instance

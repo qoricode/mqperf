@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+ansible-playbook stop_tests.yml
+#ansible-playbook --extra-vars test_name='sqsfifo-s10*10-r75*1-m250K*100B.json' run_tests.yml
+ansible-playbook --extra-vars test_name='sqsfifo-s5*10-r50*1-m5OOK*16KB.json' run_tests.yml

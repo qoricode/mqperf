@@ -1,4 +1,4 @@
-- include: prepare_storage.yml
+- import_tasks: prepare_storage.yml
   when: storage_device is defined
 
 - name: Upload Prometheus configuration file

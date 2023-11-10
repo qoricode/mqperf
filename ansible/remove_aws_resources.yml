@@ -6,6 +6,11 @@
   environment:
     AWS_REGION: "{{ aws_region }}"
 
+  vars:
+    test_name: "terminate" 
+  roles:
+    - role: queue
+
   tasks:
     - name: Gather EC2 instances facts
       ec2_instance_info:

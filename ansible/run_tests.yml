@@ -1,8 +1,11 @@
 ---
+# Use the run_tests shell script to execute this playbook
+- hosts: 127.0.0.1
+  connection: local
+  roles:
+  - role: queue 
 
 - hosts: Receiver:Sender
-  vars:
-    test_name: "sqsfifo-5threads.json"
   tasks:
   - name: Set facts for env variables
     set_fact:

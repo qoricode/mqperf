@@ -1,6 +1,6 @@
 ---
-- include: prepare_storage.yml
+- import_tasks: prepare_storage.yml
 
-- include: install_redistreams.yml
+- import_tasks: install_redistreams.yml
 
-- include: start_redistreams.yml
+- import_tasks: start_redistreams.yml

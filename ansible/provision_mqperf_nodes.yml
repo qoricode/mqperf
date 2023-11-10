@@ -4,6 +4,7 @@
   connection: local
   roles:
   - role: scala
+  - role: aws_common
   - { role: ec2_instance, count: 4, ec2_groups: [ 'mqperf_ssh_access', 'default' ], aws_instance_type: "{{ ec2_instance_type }}", ec2_tag_group: Receiver }
 
 - hosts: Receiver

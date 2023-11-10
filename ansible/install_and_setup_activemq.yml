@@ -2,6 +2,7 @@
 - hosts: 127.0.0.1
   connection: local
   roles:
+  - role: aws_common
   - { role: ec2_instance, count: 3, ec2_groups: [ 'mqperf_ssh_access', 'default'], aws_instance_type: t2.small, ec2_tag_group: Activemq }
 
 - hosts: Activemq

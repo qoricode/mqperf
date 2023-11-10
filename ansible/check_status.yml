@@ -1,4 +1,5 @@
 ---
+
 - hosts: Receiver:Sender
   tasks:
   - name: Check status

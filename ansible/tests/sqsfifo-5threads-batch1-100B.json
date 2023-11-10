@@ -1,11 +1,11 @@
 {
-    "name": "sqsfifo-5threads",
+    "name": "sqsfifo-5threads-batch1-100b",
     "mq_type": "SqsFifo",
     "sender_threads": 5,
     "msg_count_per_thread": 200000,
     "msg_size": 100,
-    "max_send_msg_batch_size": 10,
+    "max_send_msg_batch_size": 1,
     "receiver_threads": 5,
-    "receive_msg_batch_size": 10,
+    "receive_msg_batch_size": 1,
     "broker_hosts": []
 }

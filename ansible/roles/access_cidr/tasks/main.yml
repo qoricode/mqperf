@@ -1,0 +1,8 @@
+- name: Get local public IP from ipify.org
+  ipify_facts:
+  when: lockdown_public_access|bool
+
+- set_fact: 
+    public_access_cidr: "{{ ipify_public_ip }}/32"
+  when: lockdown_public_access|bool
+

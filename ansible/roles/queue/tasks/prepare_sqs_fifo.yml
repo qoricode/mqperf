@@ -1,0 +1,5 @@
+- name: Delete sqs fifo queue
+  sqs_queue:
+    name: "mqperf-test-queue.fifo"
+    state: absent
+  register: queue

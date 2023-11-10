@@ -1,0 +1,11 @@
+{
+    "name": "sqsfifo-s10*10-r75*1-m250K*100B.json",
+    "mq_type": "SqsFifo",
+    "sender_threads": 10,
+    "msg_count_per_thread": 25000,
+    "msg_size": 100,
+    "max_send_msg_batch_size": 10,
+    "receiver_threads": 75,
+    "receive_msg_batch_size": 1,
+    "broker_hosts": []
+}
