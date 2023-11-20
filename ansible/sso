@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+echo "Run as '. sso <profile name>' to set current environment"
+set -e
+[ -z $1 ] && echo "profile name required (from ~/.aws/config)" && exit
+aws sso login --profile $1
+# They couldn't really make it much harder to extract this data programatically
+cfl=($(ls -rt ~/.aws/sso/cache))
+rg="$(jq -r .region ~/.aws/sso/cache/${cfl[-1]})"
+at="$(jq -r .accessToken ~/.aws/sso/cache/${cfl[-1]})"
+cfg="$(grep -A3 $1 ~/.aws/config)"
+acct="$(echo $cfg| awk -F" sso_account_id = " ' {print $2;exit}' | cut -d' ' -f1)"
+role="$(echo $cfg| awk -F" sso_role_name = " ' {print $2;exit}' | cut -d' ' -f1)"
+creds="$(aws sso get-role-credentials --account-id $acct --role-name $role --access-token $at --region $rg)"
+export AWS_ACCESS_KEY_ID="$(echo $creds| jq -r .roleCredentials.accessKeyId)"
+export AWS_SECRET_ACCESS_KEY="$(echo $creds| jq -r .roleCredentials.secretAccessKey)"
+export AWS_REGION=$rg
+export AWS_SESSION_TOKEN="$(echo $creds| jq -r .roleCredentials.sessionToken)"

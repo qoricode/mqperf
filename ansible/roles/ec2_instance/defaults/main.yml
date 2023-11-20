@@ -1,5 +1,5 @@
 ---
-aws_ami_id: "ami-04fb7beeed4da358b"
+aws_ami_id: "ami-07355fe79b493752d"
 ec2_instance_type: t2.micro
 ec2_groups: [ 'mqperf_ssh_access' ]
 count: 1

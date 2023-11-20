@@ -2,16 +2,15 @@
 # For all hosts, avoid warning messages about interpolation
 ansible_python_interpreter: /usr/bin/python3
 
-aws_region: eu-west-2
+aws_region: eu-west-1
 aws_zone: "{{ aws_region }}a"
 # Control whether to auto provision VPC and/or Subnet (public with IGW)
-create_vpc: False
+create_vpc: True
 create_subnet: True
 # VPC & subnet ranges For use or auto provisioning
-#vpc_name: "general-vpc"
 vpc_name: "mqperf-vpc"
-vpc_cidr_block: "172.42.0.0/16"
-subnet_cidr: "172.42.0.0/22"
+vpc_cidr_block: "172.44.0.0/16"
+subnet_cidr: "172.44.0.0/22"
 # Private addresses require a private subnet with outbound internet via NAT 
 # (see Ansible script to provision a NAT cluster)
 use_private_addresses: False
@@ -23,10 +22,11 @@ key_name: "mqperf-key"
 ec2_instance_type: r5.2xlarge
 
 # Check this is unique in S3 console before provisioning (error is not explicit)
-s3_bucket: qc-mqperf-2023
+s3_bucket: dm-mqperf-2023
 
 aws_access: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
 aws_secret: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+aws_session: "{{ lookup('env', 'AWS_SESSION_TOKEN') }}"
 
 mqperf_sources_dir: "{{ playbook_dir }}/.."
 
