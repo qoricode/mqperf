@@ -1,0 +1,35 @@
+# Counterpart to stop_vms.yml
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  roles:
+    - role: aws_common
+    
+  environment:
+    AWS_REGION: "{{ aws_region }}"
+
+  tasks:
+    - name: Gather EC2 instances facts
+      ec2_instance_info:
+        filters:
+          "tag:kind": mqperf-instance
+      register: ec2_facts
+
+    - name: Start mqperf instances
+      ec2_instance:
+        instance_ids: "{{ ec2_facts.instances|map(attribute='instance_id')|list }}"
+        state: started
+        wait: true
+      when: ec2_facts.instances|length > 0
+
+    - name: Wait for ssh to come up
+      wait_for: host="{% if use_private_addresses|bool %}{{ item.private_dns_name }}{% else %}{{ item.public_dns_name }}{% endif %}" port=22 delay=10 timeout=300
+      with_items: "{{ ec2_facts.instances }}"
+      when: ec2_facts.instances|length > 0
+      delegate_to: 127.0.0.1
+
+- hosts: Prometheus
+  become: true
+  roles:
+  - role: prometheus_grafana

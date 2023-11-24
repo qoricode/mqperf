@@ -5,8 +5,8 @@
 - import_tasks: delete_sqs_fifo.yml
   when: test_name == "terminate" or test_name.startswith("sqsfifo-")
 
-- name: Pause for 1 minute (cannot use queue again within 60 seconds of deleting it) 
+- name: Pause for 1 minute (cannot use sqs queue again within 60 seconds of deleting it) 
   pause:
     minutes: 1
-  when: queue.changed and test_name != "terminate"
+  when: (sqs_q.changed or sqsfifo_q.changed) and test_name != "terminate"
 

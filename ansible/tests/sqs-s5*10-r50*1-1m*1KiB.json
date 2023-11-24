@@ -1,9 +1,9 @@
 {
-    "name": "sqsfifo-s5*10-r50*1-m5OOK*16KB",
-    "mq_type": "SqsFifo",
+    "name": "sqs-10-1-1m*1KiB",
+    "mq_type": "Sqs",
     "sender_threads": 5,
     "msg_count_per_thread": 100000,
-    "msg_size": 16000,
+    "msg_size": 1000,
     "max_send_msg_batch_size": 10,
     "receiver_threads": 50,
     "receive_msg_batch_size": 1,
