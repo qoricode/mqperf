@@ -17,7 +17,8 @@ Tests have been run with the following prerequisites:
 ### AWS Credentials
 Message queues and test servers are automatically provisioned using **Ansible** on **AWS**. You will need to have the
 `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` present in the environment for things to work properly, as well
-as Ansible and Boto installed.
+as Ansible and Boto installed. The `ansible/sso` script can be used to set the environment
+variables according to a sso role.
 
 See [Creating AWS access key](https://aws.amazon.com/premiumsupport/knowledge-center/create-access-key/) for details.
 
@@ -33,8 +34,8 @@ If message is too short, then majority of its content will be the TS information
 configuring message length at 50+ characters.
 
 # Configuring tests
-Test configurations are located under `ansible/tests`. Each configuration has a number of parameters 
-that may influence the test execution and its results.
+Test configurations are located under `ansible/tests`. Each configuration has a number of parameters that may influence the test execution and its results. Note the number of
+sender and receiver threads is _per node_ e.g. 2 senders and 4 receivers by default.
 
 # Running tests
 *Note: all commands should be run in the `ansible` directory*
@@ -45,7 +46,9 @@ ansible-playbook install_and_setup_YourQueueName.yml
 ```
 *Note: since **AWS SQS** is a serverless offering, you don't need to setup anything for it. For SQS, you can skip this step.*
 
-*Note: you can select EC2 instance type for your tests by setting `ec2_instance_type` in the `group_vars/all.yml` file*
+*Note: you can select EC2 instance type for your tests by setting `ec2_instance_type` in the `group_vars/all.yml` file. You also need to configure the appropriate AMI resolving to
+Amazon Linux for your region in the `ec2_instance/defaults/main.xml` file (use Launch
+Instance in the console to find it).*
  
 ### Provision sender and receiver nodes
 ```shell
