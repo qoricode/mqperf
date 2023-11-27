@@ -4,6 +4,6 @@ import com.amazonaws.auth._
 import com.amazonaws.regions.Regions
 
 object AWS {
-  val DefaultRegion: String = Regions.EU_WEST_2.getName
+  val DefaultRegion: String = sys.env.getOrElse("AWS_REGION", Regions.EU_WEST_1.getName)
   val CredentialProvider: AWSCredentialsProvider = new EnvironmentVariableCredentialsProvider()
 }
