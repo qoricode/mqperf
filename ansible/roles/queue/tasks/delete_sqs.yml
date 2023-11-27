@@ -1,0 +1,6 @@
+- name: Delete sqs queue
+  sqs_queue:
+    name: "mqperf-test-queue"
+    region: "{{ aws_region }}"
+    state: absent
+  register: sqs_q

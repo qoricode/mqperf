@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+echo "Run as '. sso <profile name>' to set current environment"
+ec=0
+[ -z $1 ] && echo "profile name required (from ~/.aws/config)" && ec=1
+[ $ec == 0 ] && ec=1 && aws sso login --profile $1 && ec=0
+if [ $ec == 0 ]; then
+ # They couldn't really make it much harder to extract this data programatically
+ cfl=($(ls -rt ~/.aws/sso/cache))
+ rg="$(jq -r .region ~/.aws/sso/cache/${cfl[-1]})"
+ at="$(jq -r .accessToken ~/.aws/sso/cache/${cfl[-1]})"
+ cfg="$(grep -A3 $1 ~/.aws/config)"
+ acct="$(echo $cfg| awk -F" sso_account_id = " ' {print $2;exit}' | cut -d' ' -f1)"
+ role="$(echo $cfg| awk -F" sso_role_name = " ' {print $2;exit}' | cut -d' ' -f1)"
+ creds="$(aws sso get-role-credentials --account-id $acct --role-name $role --access-token $at --region $rg)"
+ echo "#!/usr/bin/env sh" >env
+ echo "export AWS_ACCESS_KEY_ID=\"$(echo $creds| jq -r .roleCredentials.accessKeyId)\"" >>env
+ echo "export AWS_SECRET_ACCESS_KEY=\"$(echo $creds| jq -r .roleCredentials.secretAccessKey)\"" >>env
+ echo "export AWS_REGION=$rg" >>env
+ echo "export AWS_SESSION_TOKEN=\"$(echo $creds| jq -r .roleCredentials.sessionToken)\"" >>env
+ chmod +x env
+ . ./env
+ echo "Environment set and captured in ./env script for replay: Run as '. ./env'"
+else
+ echo "Profiles: $(grep '\[profile' ~/.aws/config | awk -F"[][ ]" '{printf $3 " "}')"
+fi

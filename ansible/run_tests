@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+run_tests() {
+    ansible-playbook stop_tests.yml
+    ansible-playbook --extra-vars test_name="$1" run_tests.yml && await_tests
+}
+await_tests() {
+    touch statuslog.txt
+    until [[ $(grep -c 'compute.amazonaws.com Stopped"' statuslog.txt) == "6" ]] ; do 
+        sleep 5
+        ansible-playbook check_status.yml | tee statuslog.txt
+    done
+    rm statuslog.txt 
+}
+# Run the first test twice to warm things up
+cfgs=($(find tests -name 'sqs-*' -print))
+for cfg in ${cfgs[*]} ; do
+    [ -e ./env ] && . ./env
+    test=$(echo $cfg | sed s#tests/##)
+    [ $cfg == ${cfgs[0]} ] && run_tests $test
+    run_tests $test
+done

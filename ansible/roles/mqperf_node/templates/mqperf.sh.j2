@@ -2,7 +2,8 @@
 
 start() {
 	echo "Starting $mqperf_type ..."
-	HOST_ID={{ play_hosts.index(inventory_hostname) }} java -cp /opt/mqperf/mqperf-assembly-deps.jar:/opt/mqperf/mqperf-assembly.jar -Dconfig.file=/tmp/test-config.json com.softwaremill.mqperf.{{ mqperf_type }} > /tmp/mqperf.log 2>&1 &
+	[ -e /tmp/mqperf.log ] && rm /tmp/mqperf.log
+	HOST_ID={{ play_hosts.index(inventory_hostname) }} java -XX:CompileCommand="exclude,java/lang/Object.wait" -cp /opt/mqperf/mqperf-assembly-deps.jar:/opt/mqperf/mqperf-assembly.jar -Dconfig.file=/tmp/test-config.json com.softwaremill.mqperf.{{ mqperf_type }} > /tmp/mqperf.log 2>&1 &
 }
 
 stop() {
@@ -14,11 +15,17 @@ stop() {
 }
 
 status() {
-	num_of_processes=`ps aux | grep "com.softwaremill.mqperf.{{ mqperf_type }}" | grep -v grep | wc -l`
-	if [ $num_of_processes -eq 0 ]; then
+    pid=`ps aux | grep "com.softwaremill.mqperf.{{ mqperf_type }}" | grep -v grep | awk -F' ' ' {print $2}'`
+	if [ -z $pid ]; then
 		echo "Stopped"
 		exit 1
 	else
+	    if grep -q "Closing mq" /tmp/mqperf.log ; then 
+		    sleep 2m # sometimes leaves dangling threads even though all mq threads are done
+		    kill $pid 2>/dev/null
+			echo "Stopped"
+			exit 1
+		fi
 		echo "Running"
 		exit 0
 	fi

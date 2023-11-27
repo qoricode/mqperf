@@ -1,13 +1,17 @@
 ---
+# Use the run_tests shell script to execute this playbook
+- hosts: 127.0.0.1
+  connection: local
+  roles:
+  - role: queue 
 
 - hosts: Receiver:Sender
-  vars:
-    test_name: "sqsfifo-5threads.json"
   tasks:
   - name: Set facts for env variables
     set_fact:
       aws_access: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
       aws_secret: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+      aws_token: "{{ lookup('env', 'AWS_SESSION_TOKEN') }}"
       run_id: "run1"
   - name: Copy test template
     template:
@@ -19,6 +23,8 @@
     RUN_ID: "{{ run_id }}"
     AWS_ACCESS_KEY_ID: "{{ aws_access }}"
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret }}"
+    AWS_SESSION_TOKEN: "{{ aws_token }}"
+    AWS_REGION: "{{ aws_region }}"
   tasks:
   - name: Start receiver
     shell: nohup /opt/mqperf/mqperf.sh start
@@ -28,6 +34,8 @@
     RUN_ID: "{{ run_id }}"
     AWS_ACCESS_KEY_ID: "{{ aws_access }}"
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret }}"
+    AWS_SESSION_TOKEN: "{{ aws_token }}"
+    AWS_REGION: "{{ aws_region }}"
   tasks:
   - name: Start sender
     shell: nohup /opt/mqperf/mqperf.sh start

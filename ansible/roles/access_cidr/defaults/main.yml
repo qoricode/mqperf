@@ -1,3 +1,2 @@
 ---
-ssh_port: 22
 public_access_cidr: "0.0.0.0/0"

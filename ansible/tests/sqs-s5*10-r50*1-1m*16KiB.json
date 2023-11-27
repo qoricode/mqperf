@@ -1,0 +1,11 @@
+{
+    "name": "sqs-10-1-1m*16KiB",
+    "mq_type": "Sqs",
+    "sender_threads": 5,
+    "msg_count_per_thread": 100000,
+    "msg_size": 16000,
+    "max_send_msg_batch_size": 10,
+    "receiver_threads": 50,
+    "receive_msg_batch_size": 1,
+    "broker_hosts": []
+}

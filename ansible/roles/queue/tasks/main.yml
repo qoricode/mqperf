@@ -1,0 +1,12 @@
+# Delete queue(s) before a test in case they are backed up from a previous test
+- import_tasks: delete_sqs.yml
+  when: test_name == "terminate" or test_name.startswith("sqs-")
+
+- import_tasks: delete_sqs_fifo.yml
+  when: test_name == "terminate" or test_name.startswith("sqsfifo-")
+
+- name: Pause for 1 minute (cannot use sqs queue again within 60 seconds of deleting it) 
+  pause:
+    minutes: 1
+  when: (sqs_q.changed or sqsfifo_q.changed) and test_name != "terminate"
+

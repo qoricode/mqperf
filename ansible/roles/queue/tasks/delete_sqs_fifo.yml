@@ -1,0 +1,6 @@
+- name: Delete sqs fifo queue
+  sqs_queue:
+    name: "mqperf-test-queue.fifo"
+    region: "{{ aws_region }}"
+    state: absent
+  register: sqsfifo_q
