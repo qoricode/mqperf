@@ -29,3 +29,5 @@ impls
 
 ansible/inventory/aws_ec2.yml
 ansible/.bsp
+ansible/env
+ansible/statuslog.txt
